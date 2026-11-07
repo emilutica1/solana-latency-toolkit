@@ -12,6 +12,37 @@ asks, with your own numbers, from your own machine:
 Built while running a latency-sensitive Solana liquidation bot, where the difference between landing in the same
 slot and one slot later decides everything.
 
+## Read this before you build a liquidation bot
+
+We built these tools while trying, for more than two years, to run a profitable Solana liquidation bot on free and
+low-cost infrastructure: public RPC, free API tiers, a home connection and later a small VPS. **We never found
+evidence that it can be done.** This is not a mathematical proof that it is impossible, but it is what our own
+measurements showed, and we are publishing it so that others don't spend years finding out the same way.
+
+What the data showed:
+
+- **We lost every race.** On Kamino, 64 real liquidation attempts between 2026-10-22 and 2026-11-05 all landed on
+  chain and all failed: each landed 1 to 12 slots after the winning bot, when the position was already liquidated.
+  Every attempt still paid fees and tips.
+- **The winners land in the same slot as the price change.** About two thirds of winning Kamino liquidations refresh
+  the oracle price inside their own transaction, so by the time a public feed shows the position as liquidatable,
+  the liquidation is often already done.
+- **Public data feeds are too slow.** The public WebSocket delivered price updates a median of 170 to 190 ms after a
+  dedicated feed (Yellowstone gRPC or a paid RPC), about half a slot.
+- **The market is concentrated.** In one month of Kamino data (1,763 liquidations), 69 wallets did all of it and the
+  top two did 39%.
+- **Most opportunities are too small to pay for themselves.** In a two-week study of 4,217 liquidations on another
+  Solana lending protocol, our real cost per attempt was about $0.15, so a liquidation had to seize about $3 just to
+  break even. Only 41 of the 4,217 did.
+
+What the winners appear to have that public infrastructure does not: dedicated low-latency data feeds (gRPC or
+shredstream), servers next to the validators and block engines, staked or priority transaction routes, their own
+capital instead of flash loans, and enough volume to absorb the losing attempts.
+
+If you are starting out, measure before you invest: run `feed-race.js` and `land-bench.js` from the machine you plan
+to use and compare the slot numbers with the winners' landing slots. If you are one or more slots behind, faster
+code will not close the gap; only infrastructure will.
+
 ## Install
 
 Requires Node.js 18 or newer.
@@ -119,8 +150,8 @@ for anything competitive.
 
 ## Credits
 
-Built and maintained by [emilutica1](https://github.com/emilutica1), developed with the help of Claude Code.
-Issues and pull requests are welcome.
+Built by [emilutica1](https://github.com/emilutica1) and Claude, Anthropic's AI model, working together through
+[Claude Code](https://claude.com/claude-code). Issues and pull requests are welcome.
 
 ## License
 

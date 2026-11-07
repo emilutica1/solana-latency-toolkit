@@ -7,10 +7,24 @@
     "land-bench": "node land-bench.js",
     "ping": "node ping.js"
   },
-  "keywords": ["solana", "latency", "benchmark", "grpc", "yellowstone", "jito", "rpc", "mev"],
+  "keywords": [
+    "solana",
+    "latency",
+    "benchmark",
+    "grpc",
+    "yellowstone",
+    "jito",
+    "rpc",
+    "mev"
+  ],
   "author": "emilutica1",
+  "contributors": [
+    "Claude (Anthropic AI model, via Claude Code)"
+  ],
   "license": "MIT",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@solana/web3.js": "1.98.4",
     "@triton-one/yellowstone-grpc": "4.0.2",
