@@ -148,6 +148,13 @@ for both, so no gain in that test.
 The public WebSocket is consistently 170–190 ms behind a dedicated feed. That is roughly half a slot, which is decisive
 for anything competitive.
 
+## Related
+
+- [kamino-liquidation-tracker](https://github.com/emilutica1/kamino-liquidation-tracker): records every Kamino
+  liquidation as it happens, and who did it.
+- [kamino-health-scanner](https://github.com/emilutica1/kamino-health-scanner): health of every Kamino borrowing
+  position, distance to liquidation, and price-shock scenarios.
+
 ## Credits
 
 Built by [emilutica1](https://github.com/emilutica1) and Claude, Anthropic's AI model, working together through
