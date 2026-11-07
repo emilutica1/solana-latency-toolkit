@@ -1,0 +1,19 @@
+{
+  "name": "solana-latency-toolkit",
+  "version": "1.0.0",
+  "description": "Measure Solana infrastructure latency: which data feed is fastest (WebSocket vs gRPC), how many slots a transaction takes to land per send route, and endpoint round-trip times.",
+  "scripts": {
+    "feed-race": "node feed-race.js",
+    "land-bench": "node land-bench.js",
+    "ping": "node ping.js"
+  },
+  "keywords": ["solana", "latency", "benchmark", "grpc", "yellowstone", "jito", "rpc", "mev"],
+  "author": "emilutica1",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@solana/web3.js": "1.98.4",
+    "@triton-one/yellowstone-grpc": "4.0.2",
+    "bs58": "5.0.0"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/
+*.jsonl
+*.json.key
+throwaway*.json
+.env
