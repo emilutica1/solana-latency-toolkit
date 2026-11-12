@@ -1,11 +1,12 @@
 {
   "name": "solana-latency-toolkit",
   "version": "1.0.0",
-  "description": "Measure Solana infrastructure latency: which data feed is fastest (WebSocket vs gRPC), how many slots a transaction takes to land per send route, and endpoint round-trip times.",
+  "description": "Measure Solana infrastructure latency: which data feed is fastest (WebSocket vs gRPC), how many slots a transaction takes to land per send route, and endpoint round-trip times, and fan out one signed transaction to several send routes.",
   "scripts": {
     "feed-race": "node feed-race.js",
     "land-bench": "node land-bench.js",
-    "ping": "node ping.js"
+    "ping": "node ping.js",
+    "test": "node --test test/*.test.js"
   },
   "keywords": [
     "solana",

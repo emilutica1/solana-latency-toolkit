@@ -114,6 +114,38 @@ ENDPOINTS="a=https://rpc-a.example b=https://rpc-b.example" node ping.js
 
 One warm-up request per endpoint, then 7 timed requests on the open connection; prints min and median, fastest first.
 
+## Fan-out sender
+
+`fan-out.js` is a small module, not a command: it sends the **same signed transaction** to several routes at once
+(any RPC, Jito block engines, Helius Sender…) and can keep re-sending those same bytes until it confirms. It is the
+send path from our liquidation bot.
+
+```js
+const { sendToAll, startResend, jitoRoutes, formatResults } = require('./fan-out');
+
+const routes = [
+  { name: 'rpc', url: process.env.RPC_URL, opts: { skipPreflight: true, maxRetries: 3 } },
+  ...jitoRoutes(['ny', 'frankfurt']),          // 1 request/s per region, enforced in the resend loop
+];
+const base64 = Buffer.from(signedTx.serialize()).toString('base64');
+console.log(formatResults(await sendToAll(base64, routes)));   // "rpc ok 41 ms, jito-ny ok 38 ms, jito-frankfurt ok 115 ms"
+const stop = startResend(base64, routes, { everyMs: 300, maxMs: 4000 });
+// ... wait for confirmation, then:
+stop();
+```
+
+Why this is safe: one signed transaction has one signature, and the network accepts a signature only once, so the same
+bytes sent to ten routes, or ten times, land at most once. **Never re-sign inside a resend loop**: signing again with a
+new blockhash makes a different transaction that can land a second time. Jito and Sender accept only a transaction
+that already pays them a tip.
+
+Each result says whether that route *accepted* the transaction, not which route got it into a block; use
+`land-bench.js` for that. `npm test` runs offline tests against a local mock server.
+
+What it did for us: more routes made our transactions land sooner, but not soon enough. The winning liquidators
+landed in the same block as the price update, often refreshing the oracle inside their own transaction, so sending
+faster after seeing the update could not catch up.
+
 ## Our measurements
 
 These are real runs from our own setup, in November 2026. The samples are small, so treat them as examples of what
@@ -154,6 +186,10 @@ for anything competitive.
   liquidation as it happens, and who did it.
 - [kamino-health-scanner](https://github.com/emilutica1/kamino-health-scanner): health of every Kamino borrowing
   position, distance to liquidation, and price-shock scenarios.
+- [kamino-liquidation-alerts](https://github.com/emilutica1/kamino-liquidation-alerts): Telegram bot that warns
+  borrowers before their position can be liquidated.
+- [solana-spend-guard](https://github.com/emilutica1/solana-spend-guard): fail-closed spending limits for bots that
+  send real transactions.
 
 ## Credits
 
